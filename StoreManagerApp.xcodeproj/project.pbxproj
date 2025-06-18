@@ -29,12 +29,27 @@
 		E00342A92E01614100087677 /* StoreManagerAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoreManagerAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		E003428C2E01614000087677 /* StoreManagerApp */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = StoreManagerApp;
-			sourceTree = "<group>";
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E00342E52E01620A00087677 /* Exceptions for "StoreManagerApp" folder in "StoreManagerApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				StoreManagerApp.xcdatamodeld,
+			);
+			target = E00342892E01614000087677 /* StoreManagerApp */;
 		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		E00342E62E01620A00087677 /* Exceptions for "StoreManagerApp" folder in "Compile Sources" phase from "StoreManagerApp" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = E00342862E01614000087677 /* Sources */;
+			membershipExceptions = (
+				StoreManagerApp.xcdatamodeld,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
 		E00342A22E01614100087677 /* StoreManagerAppTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = StoreManagerAppTests;
@@ -43,6 +58,15 @@
 		E00342AC2E01614100087677 /* StoreManagerAppUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = StoreManagerAppUITests;
+			sourceTree = "<group>";
+		};
+		E00342DD2E01620A00087677 /* StoreManagerApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E00342E52E01620A00087677 /* Exceptions for "StoreManagerApp" folder in "StoreManagerApp" target */,
+				E00342E62E01620A00087677 /* Exceptions for "StoreManagerApp" folder in "Compile Sources" phase from "StoreManagerApp" target */,
+			);
+			path = StoreManagerApp;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,10 +99,10 @@
 		E00342812E01614000087677 = {
 			isa = PBXGroup;
 			children = (
-				E003428C2E01614000087677 /* StoreManagerApp */,
 				E00342A22E01614100087677 /* StoreManagerAppTests */,
 				E00342AC2E01614100087677 /* StoreManagerAppUITests */,
 				E003428B2E01614000087677 /* Products */,
+				E00342DD2E01620A00087677 /* StoreManagerApp */,
 			);
 			sourceTree = "<group>";
 		};
@@ -108,7 +132,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E003428C2E01614000087677 /* StoreManagerApp */,
+				E00342DD2E01620A00087677 /* StoreManagerApp */,
 			);
 			name = StoreManagerApp;
 			packageProductDependencies = (
