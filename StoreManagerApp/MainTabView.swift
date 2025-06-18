@@ -24,6 +24,12 @@ struct MainTabView: View {
                     Text("상품 관리")
                 }
             
+            MonthlySalesStatsView()
+                .tabItem {
+                    Image(systemName: "chart.bar.doc.horizontal")
+                    Text("판매 통계")
+                }
+            
             SettingsView()
                 .tabItem {
                     Image(systemName: "gearshape.fill")
