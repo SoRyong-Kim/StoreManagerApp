@@ -1,4 +1,4 @@
-// MARK: - DashboardView.swift (대시보드)
+// MARK: - Updated DashboardView.swift (기존 DashboardView.swift 교체)
 import SwiftUI
 
 struct DashboardView: View {
@@ -37,11 +37,7 @@ struct DashboardView: View {
                     }
                     
                     // 매장 정보 카드
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("매장 정보")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                        
+                    InfoSection(title: "매장 정보") {
                         VStack(spacing: 12) {
                             InfoRow(label: "매장명", value: storeManager.storeInfo.name)
                             InfoRow(label: "업종", value: storeManager.storeInfo.category.rawValue)
@@ -49,57 +45,39 @@ struct DashboardView: View {
                             InfoRow(label: "영업시간", value: storeManager.storeInfo.businessHours)
                         }
                     }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .cornerRadius(16)
-                    .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+                    
+                    // 최근 활동 섹션 (추가 기능)
+                    InfoSection(title: "최근 활동") {
+                        VStack(spacing: 8) {
+                            if storeManager.employees.isEmpty && storeManager.products.isEmpty {
+                                Text("아직 등록된 데이터가 없습니다")
+                                    .foregroundColor(.secondary)
+                                    .italic()
+                            } else {
+                                if !storeManager.employees.isEmpty {
+                                    HStack {
+                                        Image(systemName: "person.badge.plus")
+                                            .foregroundColor(.blue)
+                                        Text("최근 등록된 직원: \(storeManager.employees.last?.name ?? "없음")")
+                                        Spacer()
+                                    }
+                                }
+                                
+                                if !storeManager.products.isEmpty {
+                                    HStack {
+                                        Image(systemName: "cube.box")
+                                            .foregroundColor(.green)
+                                        Text("최근 등록된 상품: \(storeManager.products.last?.name ?? "없음")")
+                                        Spacer()
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 .padding()
             }
             .navigationTitle("대시보드")
-        }
-    }
-}
-
-struct StatCard: View {
-    let title: String
-    let value: String
-    let icon: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(color)
-            
-            Text(value)
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(color.opacity(0.1))
-        .cornerRadius(12)
-    }
-}
-
-struct InfoRow: View {
-    let label: String
-    let value: String
-    
-    var body: some View {
-        HStack {
-            Text(label)
-                .foregroundColor(.secondary)
-            Spacer()
-            Text(value)
-                .fontWeight(.medium)
         }
     }
 }

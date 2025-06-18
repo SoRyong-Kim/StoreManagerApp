@@ -1,17 +1,28 @@
-// MARK: - AddEmployeeView.swift (직원 추가)
 import SwiftUI
 
-struct AddEmployeeView: View {
+struct EditEmployeeView: View {
+    @Binding var employee: Employee
     @EnvironmentObject var storeManager: StoreManager
     @Environment(\.presentationMode) var presentationMode
     
-    @State private var name = ""
-    @State private var position = ""
-    @State private var phone = ""
-    @State private var email = ""
-    @State private var salary = ""
-    @State private var notes = ""
-    @State private var workSchedule = WorkSchedule()
+    @State private var name: String
+    @State private var position: String
+    @State private var phone: String
+    @State private var email: String
+    @State private var salary: String
+    @State private var notes: String
+    @State private var workSchedule: WorkSchedule
+    
+    init(employee: Binding<Employee>) {
+        self._employee = employee
+        self._name = State(initialValue: employee.wrappedValue.name)
+        self._position = State(initialValue: employee.wrappedValue.position)
+        self._phone = State(initialValue: employee.wrappedValue.phone)
+        self._email = State(initialValue: employee.wrappedValue.email)
+        self._salary = State(initialValue: employee.wrappedValue.salary > 0 ? String(Int(employee.wrappedValue.salary)) : "")
+        self._notes = State(initialValue: employee.wrappedValue.notes)
+        self._workSchedule = State(initialValue: employee.wrappedValue.workSchedule)
+    }
     
     var body: some View {
         NavigationView {
@@ -42,7 +53,7 @@ struct AddEmployeeView: View {
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("새 직원 추가")
+            .navigationTitle("직원 정보 수정")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -53,16 +64,15 @@ struct AddEmployeeView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("저장") {
-                        let employee = Employee(
-                            name: name,
-                            position: position,
-                            phone: phone,
-                            email: email,
-                            salary: Double(salary) ?? 0,
-                            workSchedule: workSchedule,
-                            notes: notes
-                        )
-                        storeManager.addEmployee(employee)
+                        employee.name = name
+                        employee.position = position
+                        employee.phone = phone
+                        employee.email = email
+                        employee.salary = Double(salary) ?? 0
+                        employee.notes = notes
+                        employee.workSchedule = workSchedule
+                        
+                        storeManager.updateEmployee(employee)
                         presentationMode.wrappedValue.dismiss()
                     }
                     .disabled(name.isEmpty || position.isEmpty)

@@ -46,3 +46,99 @@ class StoreManager: ObservableObject {
         products.removeAll { $0.id == product.id }
     }
 }
+
+extension StoreManager {
+    func updateEmployee(_ employee: Employee) {
+        if let index = employees.firstIndex(where: { $0.id == employee.id }) {
+            employees[index] = employee
+            saveEmployees()
+        }
+    }
+    
+    func toggleEmployeeStatus(_ employee: Employee) {
+        if let index = employees.firstIndex(where: { $0.id == employee.id }) {
+            employees[index].isActive.toggle()
+            saveEmployees()
+        }
+    }
+    
+    func getActiveEmployees() -> [Employee] {
+        return employees.filter { $0.isActive }
+    }
+    
+    func getInactiveEmployees() -> [Employee] {
+        return employees.filter { !$0.isActive }
+    }
+    
+    func searchEmployees(query: String) -> [Employee] {
+        if query.isEmpty {
+            return employees
+        }
+        return employees.filter { employee in
+            employee.name.localizedCaseInsensitiveContains(query) ||
+            employee.position.localizedCaseInsensitiveContains(query) ||
+            employee.phone.contains(query)
+        }
+    }
+    
+    private func saveEmployees() {
+        if let encoded = try? JSONEncoder().encode(employees) {
+            UserDefaults.standard.set(encoded, forKey: "employees")
+        }
+    }
+    
+    func loadEmployees() {
+        if let data = UserDefaults.standard.data(forKey: "employees"),
+           let decoded = try? JSONDecoder().decode([Employee].self, from: data) {
+            employees = decoded
+        }
+    }
+    
+    func loadSampleData() {
+            // 매장 정보가 비어있으면 샘플 데이터 로드
+            if storeInfo.name.isEmpty {
+                storeInfo = SampleDataManager.createSampleStoreInfo()
+                saveStoreInfo()
+                isFirstRun = false
+            }
+            
+            // 직원 데이터가 비어있으면 샘플 데이터 로드
+            if employees.isEmpty {
+                employees = SampleDataManager.createSampleEmployees()
+                saveEmployees()
+            }
+            
+            // 상품 데이터가 비어있으면 샘플 데이터 로드
+            if products.isEmpty {
+                products = SampleDataManager.createSampleProducts()
+                saveProducts()
+            }
+        }
+        
+        func resetToSampleData() {
+            // 모든 데이터를 샘플 데이터로 리셋
+            storeInfo = SampleDataManager.createSampleStoreInfo()
+            employees = SampleDataManager.createSampleEmployees()
+            products = SampleDataManager.createSampleProducts()
+            
+            // 저장
+            saveStoreInfo()
+            saveEmployees()
+            saveProducts()
+            
+            isFirstRun = false
+        }
+        
+        private func saveProducts() {
+            if let encoded = try? JSONEncoder().encode(products) {
+                UserDefaults.standard.set(encoded, forKey: "products")
+            }
+        }
+        
+        func loadProducts() {
+            if let data = UserDefaults.standard.data(forKey: "products"),
+               let decoded = try? JSONDecoder().decode([Product].self, from: data) {
+                products = decoded
+            }
+        }
+}
