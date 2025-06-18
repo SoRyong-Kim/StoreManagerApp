@@ -1,4 +1,4 @@
-// MARK: - DashboardView.swift (알림 기능 포함)
+// MARK: - DashboardView.swift (Purple Theme Applied)
 import SwiftUI
 
 struct DashboardView: View {
@@ -32,7 +32,16 @@ struct DashboardView: View {
                 .padding(.horizontal)
                 .padding(.top)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.purple.opacity(0.05),
+                        Color.pink.opacity(0.03)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
             .navigationTitle("대시보드")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -40,11 +49,25 @@ struct DashboardView: View {
                         showingLowStockAlert = true
                     }) {
                         ZStack {
-                            Image(systemName: "bell")
-                                .font(.title2)
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [
+                                            Color.purple.opacity(0.8),
+                                            Color.pink.opacity(0.6)
+                                        ]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 36, height: 36)
+                            
+                            Image(systemName: "bell.fill")
+                                .font(.title3)
+                                .foregroundColor(.white)
                             
                             NotificationBadge(count: notificationManager.unreadCount)
-                                .offset(x: 10, y: -10)
+                                .offset(x: 12, y: -12)
                         }
                     }
                 }
@@ -65,27 +88,64 @@ struct StoreInfoHeaderView: View {
     @EnvironmentObject var storeManager: StoreManager
     
     var body: some View {
-        VStack(spacing: 8) {
-            Text(storeManager.storeInfo.name)
-                .font(.title2)
-                .fontWeight(.bold)
+        VStack(spacing: 12) {
+            // 상단 그라데이션 영역
+            VStack(spacing: 8) {
+                Text(storeManager.storeInfo.name)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                
+                Text(storeManager.storeInfo.category.rawValue)
+                    .font(.subheadline)
+                    .foregroundColor(.white.opacity(0.9))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 20)
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.purple.opacity(0.8),
+                        Color.pink.opacity(0.6)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .clipShape(
+                RoundedRectangle(cornerRadius: 16)
+            )
             
-            Text(storeManager.storeInfo.category.rawValue)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            Text("영업시간: \(storeManager.storeInfo.businessHours)")
-                .font(.caption)
-                .foregroundColor(.secondary)
+            // 하단 정보 영역
+            VStack(spacing: 4) {
+                HStack {
+                    Image(systemName: "clock.fill")
+                        .foregroundColor(.purple.opacity(0.7))
+                    Text("영업시간")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text(storeManager.storeInfo.businessHours)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color(.systemBackground))
+            .clipShape(
+                RoundedRectangle(cornerRadius: 12)
+            )
         }
-        .frame(maxWidth: .infinity)
-        .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.blue.opacity(0.05))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.blue.opacity(0.1), lineWidth: 1)
+                .fill(Color(.systemBackground))
+                .shadow(
+                    color: Color.purple.opacity(0.15),
+                    radius: 8,
+                    x: 0,
+                    y: 4
                 )
         )
     }
@@ -100,6 +160,7 @@ struct StatsOverviewView: View {
                 Text("매장 현황")
                     .font(.headline)
                     .fontWeight(.bold)
+                    .foregroundColor(.primary)
                 Spacer()
             }
             
@@ -108,14 +169,14 @@ struct StatsOverviewView: View {
                     title: "총 상품",
                     value: "\(storeManager.products.count)개",
                     icon: "cube.box.fill",
-                    color: .blue
+                    color: .purple
                 )
                 
                 StatCard(
                     title: "활성 직원",
                     value: "\(storeManager.getActiveEmployees().count)명",
                     icon: "person.fill",
-                    color: .green
+                    color: .pink
                 )
                 
                 StatCard(
@@ -143,14 +204,24 @@ struct StatCard: View {
     let color: Color
     
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
+            // 그라데이션 아이콘 배경
             Circle()
-                .fill(color.opacity(0.1))
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            color.opacity(0.8),
+                            color.opacity(0.5)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
                 .frame(width: 50, height: 50)
                 .overlay(
                     Image(systemName: icon)
                         .font(.title3)
-                        .foregroundColor(color)
+                        .foregroundColor(.white)
                 )
             
             VStack(spacing: 4) {
@@ -166,12 +237,17 @@ struct StatCard: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 120)
+        .frame(height: 130)
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
-                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
+                .fill(Color(.systemBackground))
+                .shadow(
+                    color: color.opacity(0.15),
+                    radius: 8,
+                    x: 0,
+                    y: 4
+                )
         )
     }
 }
@@ -187,6 +263,7 @@ struct QuickActionsView: View {
                 Text("빠른 실행")
                     .font(.headline)
                     .fontWeight(.bold)
+                    .foregroundColor(.primary)
                 Spacer()
             }
             
@@ -194,7 +271,7 @@ struct QuickActionsView: View {
                 QuickActionButton(
                     title: "상품 추가",
                     icon: "plus.circle.fill",
-                    color: .blue
+                    color: .purple
                 ) {
                     showingAddProduct = true
                 }
@@ -202,7 +279,7 @@ struct QuickActionsView: View {
                 QuickActionButton(
                     title: "상품 관리",
                     icon: "cube.box.fill",
-                    color: .green
+                    color: .pink
                 ) {
                     showingProductView = true
                 }
@@ -210,7 +287,7 @@ struct QuickActionsView: View {
                 QuickActionButton(
                     title: "직원 관리",
                     icon: "person.fill",
-                    color: .purple
+                    color: Color.purple.opacity(0.7)
                 ) {
                     showingEmployeeView = true
                 }
@@ -228,7 +305,6 @@ struct QuickActionsView: View {
     }
 }
 
-
 struct QuickActionButton: View {
     let title: String
     let icon: String
@@ -237,14 +313,30 @@ struct QuickActionButton: View {
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: 12) {
+                // 그라데이션 원형 버튼
                 Circle()
-                    .fill(color)
-                    .frame(width: 44, height: 44)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                color.opacity(0.8),
+                                color.opacity(0.6)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 50, height: 50)
                     .overlay(
                         Image(systemName: icon)
                             .font(.title3)
                             .foregroundColor(.white)
+                    )
+                    .shadow(
+                        color: color.opacity(0.3),
+                        radius: 4,
+                        x: 0,
+                        y: 2
                     )
                 
                 Text(title)
@@ -254,13 +346,15 @@ struct QuickActionButton: View {
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 90)
+            .frame(height: 100)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(color.opacity(0.05))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(color.opacity(0.1), lineWidth: 1)
+                    .fill(Color(.systemBackground))
+                    .shadow(
+                        color: color.opacity(0.1),
+                        radius: 6,
+                        x: 0,
+                        y: 3
                     )
             )
         }
@@ -295,38 +389,58 @@ struct RecentActivityView: View {
                 Text("최근 활동")
                     .font(.headline)
                     .fontWeight(.bold)
+                    .foregroundColor(.primary)
                 Spacer()
             }
             
             VStack(spacing: 12) {
                 // 최근 재고 부족 상품들
                 if !recentLowStockProducts.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundColor(.orange)
+                            Circle()
+                                .fill(Color.orange)
+                                .frame(width: 20, height: 20)
+                                .overlay(
+                                    Image(systemName: "exclamationmark")
+                                        .font(.caption2)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
+                                )
+                            
                             Text("재고 부족 상품")
                                 .font(.subheadline)
-                                .fontWeight(.medium)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
                             Spacer()
                         }
                         
                         ForEach(recentLowStockProducts, id: \.id) { product in
-                            HStack {
-                                // 기본 아이콘 사용
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.blue.opacity(0.1))
-                                    .frame(width: 30, height: 30)
+                            HStack(spacing: 12) {
+                                // 상품 아이콘
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [
+                                                Color.purple.opacity(0.7),
+                                                Color.pink.opacity(0.5)
+                                            ]),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .frame(width: 32, height: 32)
                                     .overlay(
                                         Image(systemName: iconForCategory(product.category))
                                             .font(.caption)
-                                            .foregroundColor(.blue)
+                                            .foregroundColor(.white)
                                     )
                                 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(product.name)
                                         .font(.caption)
                                         .fontWeight(.medium)
+                                        .foregroundColor(.primary)
                                     Text("재고: \(product.stock)개")
                                         .font(.caption2)
                                         .foregroundColor(.secondary)
@@ -339,25 +453,56 @@ struct RecentActivityView: View {
                                     updatedProduct.stock += 10
                                     storeManager.updateProduct(updatedProduct)
                                 }) {
-                                    Image(systemName: "plus.circle.fill")
-                                        .foregroundColor(.green)
-                                        .font(.caption)
+                                    Circle()
+                                        .fill(Color.green)
+                                        .frame(width: 28, height: 28)
+                                        .overlay(
+                                            Image(systemName: "plus")
+                                                .font(.caption)
+                                                .fontWeight(.bold)
+                                                .foregroundColor(.white)
+                                        )
                                 }
                             }
-                            .padding(.horizontal, 8)
+                            .padding(.horizontal, 4)
                         }
                     }
-                    .padding()
-                    .background(Color.orange.opacity(0.1))
-                    .cornerRadius(8)
+                    .padding(16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.orange.opacity(0.08))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+                            )
+                    )
                 }
                 
                 // 오늘의 요약
-                HStack {
+                HStack(spacing: 16) {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.purple.opacity(0.8),
+                                    Color.pink.opacity(0.6)
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 50, height: 50)
+                        .overlay(
+                            Image(systemName: "chart.bar.fill")
+                                .font(.title3)
+                                .foregroundColor(.white)
+                        )
+                    
                     VStack(alignment: .leading, spacing: 4) {
                         Text("오늘의 요약")
                             .font(.subheadline)
-                            .fontWeight(.medium)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
                         Text("• 신규 알림: \(notificationManager.unreadCount)개")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -367,14 +512,18 @@ struct RecentActivityView: View {
                     }
                     
                     Spacer()
-                    
-                    Image(systemName: "chart.bar.fill")
-                        .font(.title2)
-                        .foregroundColor(.blue)
                 }
-                .padding()
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(8)
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(.systemBackground))
+                        .shadow(
+                            color: Color.purple.opacity(0.1),
+                            radius: 6,
+                            x: 0,
+                            y: 3
+                        )
+                )
             }
         }
     }

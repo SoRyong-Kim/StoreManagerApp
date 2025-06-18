@@ -96,37 +96,6 @@ struct EmptyStateView: View {
     }
 }
 
-// MARK: - CustomTextField 컴포넌트 (향상된 버전)
-struct CustomTextField: View {
-    let title: String
-    @Binding var text: String
-    let placeholder: String?
-    let keyboardType: UIKeyboardType
-    
-    init(_ title: String, text: Binding<String>, placeholder: String? = nil, keyboardType: UIKeyboardType = .default) {
-        self.title = title
-        self._text = text
-        self.placeholder = placeholder
-        self.keyboardType = keyboardType
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.subheadline)
-                .fontWeight(.medium)
-            
-            TextField(placeholder ?? title, text: $text)
-                .textFieldStyle(PlainTextFieldStyle())
-                .keyboardType(keyboardType)
-                .padding(.horizontal, 16)
-                .frame(height: 50)
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
-        }
-    }
-}
-
 // MARK: - DateFormatter Extension
 extension DateFormatter {
     static let short: DateFormatter = {

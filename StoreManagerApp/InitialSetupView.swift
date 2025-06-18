@@ -1,4 +1,4 @@
-// MARK: - InitialSetupView.swift (초기 설정 화면)
+// MARK: - InitialSetupView.swift (Purple Theme Applied)
 import SwiftUI
 
 struct InitialSetupView: View {
@@ -8,64 +8,194 @@ struct InitialSetupView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 24) {
-                    // 헤더
-                    VStack(spacing: 16) {
-                        Image(systemName: "storefront")
-                            .font(.system(size: 64))
-                            .foregroundColor(.blue)
+                VStack(spacing: 32) {
+                    // 헤더 섹션
+                    VStack(spacing: 20) {
+                        // 메인 아이콘
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color.purple.opacity(0.8),
+                                        Color.pink.opacity(0.6)
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 120, height: 120)
+                            .overlay(
+                                Image(systemName: "storefront")
+                                    .font(.system(size: 48))
+                                    .foregroundColor(.white)
+                            )
+                            .shadow(
+                                color: Color.purple.opacity(0.3),
+                                radius: 12,
+                                x: 0,
+                                y: 6
+                            )
                         
-                        Text("매장 관리 앱에 오신 것을\n환영합니다!")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .multilineTextAlignment(.center)
+                        VStack(spacing: 8) {
+                            Text("매장 관리 앱에")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
+                            
+                            Text("오신 것을 환영합니다!")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
+                        }
                         
                         Text("매장 정보를 설정하여 시작하세요")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
                     }
                     .padding(.top, 40)
                     
-                    // 입력 폼
-                    VStack(spacing: 20) {
-                        CustomTextField("매장명", text: $storeInfo.name)
-                        CustomTextField("주소", text: $storeInfo.address)
-                        
-                        HStack(spacing: 12) {
-                            CustomTextField("전화번호", text: $storeInfo.phone)
+                    // 매장 정보 입력 섹션
+                    VStack(spacing: 24) {
+                        // 기본 정보
+                        VStack(spacing: 16) {
+                            SetupSectionHeaderView(title: "기본 정보", icon: "storefront")
                             
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("업종")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
+                            VStack(spacing: 12) {
+                                SetupTextField(
+                                    title: "매장명",
+                                    text: $storeInfo.name,
+                                    icon: "storefront",
+                                    placeholder: "매장 이름을 입력하세요"
+                                )
                                 
-                                Picker("업종", selection: $storeInfo.category) {
-                                    ForEach(StoreCategory.allCases, id: \.self) { category in
-                                        Text(category.rawValue).tag(category)
-                                    }
-                                }
-                                .pickerStyle(MenuPickerStyle())
-                                .frame(maxWidth: .infinity)
-                                .padding(.horizontal, 16)
-                                .frame(height: 50)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(12)
+                                SetupTextField(
+                                    title: "주소",
+                                    text: $storeInfo.address,
+                                    icon: "location.fill",
+                                    placeholder: "매장 주소를 입력하세요"
+                                )
+                                
+                                SetupTextField(
+                                    title: "전화번호",
+                                    text: $storeInfo.phone,
+                                    icon: "phone.fill",
+                                    placeholder: "010-0000-0000",
+                                    keyboardType: .phonePad
+                                )
                             }
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color(.systemBackground))
+                                    .shadow(
+                                        color: Color.purple.opacity(0.1),
+                                        radius: 8,
+                                        x: 0,
+                                        y: 4
+                                    )
+                            )
                         }
                         
-                        CustomTextField("영업시간 (예: 09:00 - 22:00)", text: $storeInfo.businessHours)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("매장 소개")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
+                        // 업종 및 운영 정보
+                        VStack(spacing: 16) {
+                            SetupSectionHeaderView(title: "운영 정보", icon: "clock.fill")
                             
-                            TextEditor(text: $storeInfo.description)
-                                .frame(height: 100)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(12)
+                            VStack(spacing: 16) {
+                                // 업종 선택
+                                HStack(spacing: 12) {
+                                    Circle()
+                                        .fill(Color.purple.opacity(0.1))
+                                        .frame(width: 32, height: 32)
+                                        .overlay(
+                                            Image(systemName: "tag.fill")
+                                                .font(.caption)
+                                                .foregroundColor(.purple)
+                                        )
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("업종")
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.secondary)
+                                        
+                                        Picker("업종", selection: $storeInfo.category) {
+                                            ForEach(StoreCategory.allCases, id: \.self) { category in
+                                                Text(category.rawValue).tag(category)
+                                            }
+                                        }
+                                        .pickerStyle(MenuPickerStyle())
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                }
+                                .padding(.vertical, 4)
+                                
+                                SetupTextField(
+                                    title: "영업시간",
+                                    text: $storeInfo.businessHours,
+                                    icon: "clock.fill",
+                                    placeholder: "예: 09:00 - 22:00"
+                                )
+                            }
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color(.systemBackground))
+                                    .shadow(
+                                        color: Color.purple.opacity(0.1),
+                                        radius: 8,
+                                        x: 0,
+                                        y: 4
+                                    )
+                            )
+                        }
+                        
+                        // 매장 소개
+                        VStack(spacing: 16) {
+                            SetupSectionHeaderView(title: "매장 소개", icon: "text.bubble.fill")
+                            
+                            VStack(spacing: 12) {
+                                HStack(alignment: .top, spacing: 12) {
+                                    Circle()
+                                        .fill(Color.purple.opacity(0.1))
+                                        .frame(width: 32, height: 32)
+                                        .overlay(
+                                            Image(systemName: "text.bubble.fill")
+                                                .font(.caption)
+                                                .foregroundColor(.purple)
+                                        )
+                                    
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("소개글")
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.secondary)
+                                        
+                                        TextEditor(text: $storeInfo.description)
+                                            .frame(height: 100)
+                                            .padding(12)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .fill(Color.purple.opacity(0.05))
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 8)
+                                                            .stroke(Color.purple.opacity(0.2), lineWidth: 1)
+                                                    )
+                                            )
+                                    }
+                                }
+                            }
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color(.systemBackground))
+                                    .shadow(
+                                        color: Color.purple.opacity(0.1),
+                                        radius: 8,
+                                        x: 0,
+                                        y: 4
+                                    )
+                            )
                         }
                     }
                     
@@ -74,23 +204,121 @@ struct InitialSetupView: View {
                         storeManager.storeInfo = storeInfo
                         storeManager.saveStoreInfo()
                     }) {
-                        Text("설정 완료")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(
-                                (storeInfo.name.isEmpty || storeInfo.address.isEmpty)
-                                ? Color.gray : Color.blue
+                        HStack(spacing: 12) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.title3)
+                            
+                            Text("설정 완료")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 56)
+                        .background(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    (storeInfo.name.isEmpty || storeInfo.address.isEmpty) ? Color.gray : Color.purple.opacity(0.8),
+                                    (storeInfo.name.isEmpty || storeInfo.address.isEmpty) ? Color.gray : Color.pink.opacity(0.6)
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
                             )
-                            .cornerRadius(12)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(
+                            color: Color.purple.opacity(0.3),
+                            radius: 8,
+                            x: 0,
+                            y: 4
+                        )
                     }
                     .disabled(storeInfo.name.isEmpty || storeInfo.address.isEmpty)
+                    .padding(.horizontal, 20)
+                    
+                    Spacer(minLength: 40)
                 }
                 .padding(.horizontal, 24)
-                .padding(.bottom, 40)
             }
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.purple.opacity(0.05),
+                        Color.pink.opacity(0.03)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
             .navigationBarHidden(true)
         }
+    }
+}
+
+// MARK: - Supporting Views for Setup
+struct SetupSectionHeaderView: View {
+    let title: String
+    let icon: String
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.purple.opacity(0.8),
+                            Color.pink.opacity(0.6)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 32, height: 32)
+                .overlay(
+                    Image(systemName: icon)
+                        .font(.caption)
+                        .foregroundColor(.white)
+                )
+            
+            Text(title)
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
+            
+            Spacer()
+        }
+    }
+}
+
+struct SetupTextField: View {
+    let title: String
+    @Binding var text: String
+    let icon: String
+    let placeholder: String
+    var keyboardType: UIKeyboardType = .default
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(Color.purple.opacity(0.1))
+                .frame(width: 32, height: 32)
+                .overlay(
+                    Image(systemName: icon)
+                        .font(.caption)
+                        .foregroundColor(.purple)
+                )
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                
+                TextField(placeholder, text: $text)
+                    .keyboardType(keyboardType)
+                    .font(.subheadline)
+            }
+        }
+        .padding(.vertical, 4)
     }
 }

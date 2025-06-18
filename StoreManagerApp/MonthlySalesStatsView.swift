@@ -26,17 +26,73 @@ struct MonthlySalesStatsView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 24) {
+                    // 헤더 섹션
+                    VStack(spacing: 16) {
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color.purple.opacity(0.8),
+                                        Color.pink.opacity(0.6)
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 80, height: 80)
+                            .overlay(
+                                Image(systemName: "chart.bar.xaxis")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                            )
+                            .shadow(
+                                color: Color.purple.opacity(0.3),
+                                radius: 8,
+                                x: 0,
+                                y: 4
+                            )
+                        
+                        Text("월별 판매 통계")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                    }
+                    .padding(.top, 20)
+                    
                     // 기간 선택 및 AI 토글 헤더
                     HStack {
                         Button(action: { showingPeriodSelector = true }) {
-                            HStack {
+                            HStack(spacing: 8) {
+                                Circle()
+                                    .fill(Color.purple.opacity(0.1))
+                                    .frame(width: 24, height: 24)
+                                    .overlay(
+                                        Image(systemName: "calendar")
+                                            .font(.caption)
+                                            .foregroundColor(.purple)
+                                    )
+                                
                                 Text(selectedPeriod)
                                     .font(.headline)
                                     .foregroundColor(.primary)
+                                    
                                 Image(systemName: "chevron.down")
-                                    .foregroundColor(.blue)
+                                    .font(.caption)
+                                    .foregroundColor(.purple)
                             }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(.systemBackground))
+                                    .shadow(
+                                        color: Color.purple.opacity(0.1),
+                                        radius: 4,
+                                        x: 0,
+                                        y: 2
+                                    )
+                            )
                         }
                         .actionSheet(isPresented: $showingPeriodSelector) {
                             ActionSheet(
@@ -57,40 +113,71 @@ struct MonthlySalesStatsView: View {
                                 showingAIInsights.toggle()
                             }
                         }) {
-                            HStack(spacing: 4) {
+                            HStack(spacing: 6) {
                                 Image(systemName: "brain.head.profile")
                                     .font(.caption)
                                 Text("AI")
                                     .font(.caption)
                                     .fontWeight(.medium)
                             }
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(showingAIInsights ? Color.blue : Color.gray.opacity(0.2))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(
+                                showingAIInsights ?
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color.purple.opacity(0.8),
+                                        Color.pink.opacity(0.6)
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ) :
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color.gray.opacity(0.2),
+                                        Color.gray.opacity(0.1)
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                             .foregroundColor(showingAIInsights ? .white : .primary)
                             .cornerRadius(12)
+                            .shadow(
+                                color: showingAIInsights ? Color.purple.opacity(0.3) : Color.clear,
+                                radius: 4,
+                                x: 0,
+                                y: 2
+                            )
                         }
                         
-                        Text("총 \(monthlySalesData.count)개월")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text("총 \(monthlySalesData.count)개월")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                            
+                            Text("데이터 분석")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 20)
                     
                     // 전체 요약 카드
                     SalesSummaryCard(data: monthlySalesData)
-                        .padding(.horizontal)
+                        .padding(.horizontal, 20)
                     
                     // 월별 매출 차트
                     if !monthlySalesData.isEmpty {
                         MonthlySalesChart(data: monthlySalesData)
-                            .padding(.horizontal)
+                            .padding(.horizontal, 20)
                     }
                     
                     // 실시간 추천 위젯 (최신 데이터가 있을 때만)
                     if showingAIInsights && !monthlySalesData.isEmpty {
                         RealtimeRecommendationWidget(salesManager: salesManager)
-                            .padding(.horizontal)
+                            .padding(.horizontal, 20)
                     }
                     
                     // 월별 상세 데이터 및 AI 추천
@@ -120,12 +207,21 @@ struct MonthlySalesStatsView: View {
                             }
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 20)
                 }
                 .padding(.vertical)
             }
-            .navigationTitle("월별 판매 통계")
-            .navigationBarTitleDisplayMode(.large)
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.purple.opacity(0.05),
+                        Color.pink.opacity(0.03)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .navigationBarHidden(true)
         }
     }
 }
@@ -148,45 +244,78 @@ struct SalesSummaryCard: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            Text("전체 요약")
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            HStack(spacing: 16) {
-                SummaryItem(
-                    title: "총 매출",
-                    value: "\(Int(totalSales).formattedWithComma)원",
-                    icon: "creditcard.fill",
-                    color: .green
-                )
+            HStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color.purple.opacity(0.8),
+                                Color.pink.opacity(0.6)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 32, height: 32)
+                    .overlay(
+                        Image(systemName: "chart.pie.fill")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                    )
                 
-                SummaryItem(
-                    title: "판매 수량",
-                    value: "\(totalQuantity.formattedWithComma)개",
-                    icon: "cube.box.fill",
-                    color: .blue
-                )
+                Text("전체 요약")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
             }
             
-            HStack(spacing: 16) {
-                SummaryItem(
-                    title: "월평균 매출",
-                    value: "\(Int(averageMonthlySales).formattedWithComma)원",
-                    icon: "chart.line.uptrend.xyaxis",
-                    color: .orange
-                )
+            VStack(spacing: 12) {
+                HStack(spacing: 12) {
+                    SummaryItem(
+                        title: "총 매출",
+                        value: "\(Int(totalSales).formattedWithComma)원",
+                        icon: "creditcard.fill",
+                        color: .purple
+                    )
+                    
+                    SummaryItem(
+                        title: "판매 수량",
+                        value: "\(totalQuantity.formattedWithComma)개",
+                        icon: "cube.box.fill",
+                        color: .pink
+                    )
+                }
                 
-                SummaryItem(
-                    title: "분석 기간",
-                    value: "\(data.count)개월",
-                    icon: "calendar",
-                    color: .purple
-                )
+                HStack(spacing: 12) {
+                    SummaryItem(
+                        title: "월평균 매출",
+                        value: "\(Int(averageMonthlySales).formattedWithComma)원",
+                        icon: "chart.line.uptrend.xyaxis",
+                        color: .orange
+                    )
+                    
+                    SummaryItem(
+                        title: "분석 기간",
+                        value: "\(data.count)개월",
+                        icon: "calendar",
+                        color: .green
+                    )
+                }
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+                .shadow(
+                    color: Color.purple.opacity(0.1),
+                    radius: 8,
+                    x: 0,
+                    y: 4
+                )
+        )
     }
 }
 
@@ -197,27 +326,48 @@ struct SummaryItem: View {
     let color: Color
     
     var body: some View {
-        VStack(spacing: 8) {
-            HStack {
-                Image(systemName: icon)
-                    .foregroundColor(color)
-                    .font(.title2)
-                Spacer()
-            }
+        VStack(spacing: 12) {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            color.opacity(0.8),
+                            color.opacity(0.5)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 40, height: 40)
+                .overlay(
+                    Image(systemName: icon)
+                        .font(.title3)
+                        .foregroundColor(.white)
+                )
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .center, spacing: 4) {
                 Text(title)
                     .font(.caption)
                     .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                
                 Text(value)
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(8)
+        .frame(maxWidth: .infinity)
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(color.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(color.opacity(0.2), lineWidth: 1)
+                )
+        )
     }
 }
 
@@ -231,26 +381,60 @@ struct MonthlySalesChart: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            Text("월별 매출 추이")
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color.purple.opacity(0.8),
+                                Color.pink.opacity(0.6)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 32, height: 32)
+                    .overlay(
+                        Image(systemName: "chart.bar.fill")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                    )
+                
+                Text("월별 매출 추이")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+            }
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .bottom, spacing: 12) {
-                    ForEach(data.reversed(), id: \.monthYear) { monthData in // id 명시적 지정
+                    ForEach(data.reversed(), id: \.monthYear) { monthData in
                         VStack(spacing: 8) {
                             Text("\(Int(monthData.totalSales / 10000))만원")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
                             
                             Rectangle()
-                                .fill(LinearGradient(
-                                    gradient: Gradient(colors: [.blue.opacity(0.8), .blue.opacity(0.4)]),
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                ))
+                                .fill(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [
+                                            Color.purple.opacity(0.8),
+                                            Color.pink.opacity(0.4)
+                                        ]),
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                )
                                 .frame(width: 30, height: CGFloat(monthData.totalSales / maxSales * 120))
-                                .cornerRadius(4)
+                                .cornerRadius(6)
+                                .shadow(
+                                    color: Color.purple.opacity(0.3),
+                                    radius: 2,
+                                    x: 0,
+                                    y: 1
+                                )
                             
                             Text(monthData.monthYear.replacingOccurrences(of: "년", with: "\n").replacingOccurrences(of: "월", with: ""))
                                 .font(.caption2)
@@ -262,9 +446,17 @@ struct MonthlySalesChart: View {
                 .padding(.horizontal)
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+                .shadow(
+                    color: Color.purple.opacity(0.1),
+                    radius: 8,
+                    x: 0,
+                    y: 4
+                )
+        )
     }
 }
 
@@ -278,11 +470,30 @@ struct MonthlyDataCard: View {
     var body: some View {
         VStack(spacing: 0) {
             // 헤더
-            HStack {
+            HStack(spacing: 12) {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color.purple.opacity(0.8),
+                                Color.pink.opacity(0.6)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 40, height: 40)
+                    .overlay(
+                        Image(systemName: "calendar")
+                            .font(.title3)
+                            .foregroundColor(.white)
+                    )
+                
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(data.monthYear)
                             .font(.headline)
+                            .fontWeight(.bold)
                             .foregroundColor(.primary)
                         
                         // AI 분석 완료 뱃지
@@ -316,16 +527,22 @@ struct MonthlyDataCard: View {
                 Spacer()
                 
                 VStack(spacing: 4) {
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .foregroundColor(.blue)
-                        .animation(.easeInOut(duration: 0.2), value: isExpanded)
+                    Circle()
+                        .fill(Color.purple.opacity(0.1))
+                        .frame(width: 32, height: 32)
+                        .overlay(
+                            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                                .font(.caption)
+                                .foregroundColor(.purple)
+                                .animation(.easeInOut(duration: 0.2), value: isExpanded)
+                        )
                     
                     if showingAIInsights && data.recommendation != nil {
                         ConfidenceIndicator(score: data.recommendation?.confidenceScore ?? 0)
                     }
                 }
             }
-            .padding()
+            .padding(20)
             .contentShape(Rectangle())
             .onTapGesture {
                 onTap()
@@ -335,29 +552,39 @@ struct MonthlyDataCard: View {
             if isExpanded {
                 VStack(spacing: 16) {
                     Divider()
+                        .background(Color.purple.opacity(0.2))
                     
                     // 시간대별 분석 (AI 기능이 켜져 있을 때만)
                     if showingAIInsights && !data.timeSlotAnalysis.isEmpty {
                         TimeSlotQuickAnalysis(timeSlotAnalysis: data.timeSlotAnalysis)
                         Divider()
+                            .background(Color.purple.opacity(0.2))
                     }
                     
                     // 카테고리별 매출
                     CategorySalesSection(categories: data.categorySales)
                     
                     Divider()
+                        .background(Color.purple.opacity(0.2))
                     
                     // 상품별 매출 (상위 5개)
                     TopProductsSection(products: Array(data.productSales.prefix(5)))
                 }
-                .padding(.horizontal)
-                .padding(.bottom)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+                .shadow(
+                    color: Color.purple.opacity(0.1),
+                    radius: 8,
+                    x: 0,
+                    y: 4
+                )
+        )
     }
 }
 
@@ -366,16 +593,44 @@ struct TimeSlotQuickAnalysis: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("⏰ 시간대별 매출 분석")
-                .font(.subheadline)
-                .fontWeight(.semibold)
+            HStack {
+                Circle()
+                    .fill(Color.purple.opacity(0.1))
+                    .frame(width: 24, height: 24)
+                    .overlay(
+                        Image(systemName: "clock.fill")
+                            .font(.caption)
+                            .foregroundColor(.purple)
+                    )
+                
+                Text("시간대별 매출 분석")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+            }
             
             HStack(spacing: 8) {
                 ForEach(timeSlotAnalysis.prefix(4)) { analysis in
-                    VStack(spacing: 4) {
-                        Image(systemName: analysis.timeSlot.icon)
-                            .font(.caption)
-                            .foregroundColor(analysis.timeSlot.color)
+                    VStack(spacing: 6) {
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        analysis.timeSlot.color.opacity(0.8),
+                                        analysis.timeSlot.color.opacity(0.5)
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 28, height: 28)
+                            .overlay(
+                                Image(systemName: analysis.timeSlot.icon)
+                                    .font(.caption2)
+                                    .foregroundColor(.white)
+                            )
                         
                         Text(analysis.timeSlot.rawValue)
                             .font(.caption2)
@@ -388,8 +643,14 @@ struct TimeSlotQuickAnalysis: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    .background(analysis.timeSlot.color.opacity(0.1))
-                    .cornerRadius(6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(analysis.timeSlot.color.opacity(0.08))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(analysis.timeSlot.color.opacity(0.2), lineWidth: 1)
+                            )
+                    )
                 }
             }
         }
@@ -402,14 +663,33 @@ struct CategorySalesSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("카테고리별 매출")
-                .font(.subheadline)
-                .fontWeight(.semibold)
+            HStack {
+                Circle()
+                    .fill(Color.purple.opacity(0.1))
+                    .frame(width: 24, height: 24)
+                    .overlay(
+                        Image(systemName: "tag.fill")
+                            .font(.caption)
+                            .foregroundColor(.purple)
+                    )
+                
+                Text("카테고리별 매출")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+            }
             
-            ForEach(categories, id: \.category) { category in // id 명시적 지정
-                HStack {
+            ForEach(categories, id: \.category) { category in
+                HStack(spacing: 12) {
+                    Circle()
+                        .fill(Color.purple.opacity(0.2))
+                        .frame(width: 8, height: 8)
+                    
                     Text(category.category)
                         .font(.body)
+                        .foregroundColor(.primary)
                     
                     Spacer()
                     
@@ -417,12 +697,14 @@ struct CategorySalesSection: View {
                         Text("\(Int(category.totalAmount).formattedWithComma)원")
                             .font(.body)
                             .fontWeight(.medium)
+                            .foregroundColor(.primary)
                         
                         Text("\(category.quantity)개 (\(category.productCount)종류)")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
+                .padding(.vertical, 2)
             }
         }
     }
@@ -434,23 +716,49 @@ struct TopProductsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("인기 상품 TOP 5")
-                .font(.subheadline)
-                .fontWeight(.semibold)
+            HStack {
+                Circle()
+                    .fill(Color.purple.opacity(0.1))
+                    .frame(width: 24, height: 24)
+                    .overlay(
+                        Image(systemName: "trophy.fill")
+                            .font(.caption)
+                            .foregroundColor(.purple)
+                    )
+                
+                Text("인기 상품 TOP 5")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+            }
             
-            ForEach(Array(products.enumerated()), id: \.element.productName) { index, product in // id 수정
-                HStack {
-                    Text("\(index + 1)")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .frame(width: 20, height: 20)
-                        .background(rankColor(for: index))
-                        .clipShape(Circle())
+            ForEach(Array(products.enumerated()), id: \.element.productName) { index, product in
+                HStack(spacing: 12) {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    rankColor(for: index).opacity(0.8),
+                                    rankColor(for: index).opacity(0.6)
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 24, height: 24)
+                        .overlay(
+                            Text("\(index + 1)")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                        )
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(product.productName)
                             .font(.body)
+                            .foregroundColor(.primary)
                         Text(product.category)
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -462,12 +770,14 @@ struct TopProductsSection: View {
                         Text("\(Int(product.totalAmount).formattedWithComma)원")
                             .font(.body)
                             .fontWeight(.medium)
+                            .foregroundColor(.primary)
                         
                         Text("\(product.quantity)개")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
+                .padding(.vertical, 2)
             }
         }
     }
@@ -477,7 +787,7 @@ struct TopProductsSection: View {
         case 0: return .yellow
         case 1: return .gray
         case 2: return .orange
-        default: return .blue
+        default: return .purple
         }
     }
 }
