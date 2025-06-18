@@ -6,6 +6,11 @@ struct ProductDetailView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var isEditing = false
     
+    // 판매 통계를 고정값으로 저장
+    @State private var todaySales = 0
+    @State private var weeklySales = 0
+    @State private var monthlySales = 0
+    
     var stockStatus: (text: String, color: Color, icon: String) {
         switch product.stock {
         case 0:
@@ -94,12 +99,12 @@ struct ProductDetailView: View {
                         }
                     }
                     
-                    // 판매 통계 (가상 데이터)
+                    // 판매 통계 (고정값)
                     InfoSection(title: "판매 통계") {
                         VStack(spacing: 8) {
-                            InfoRow(label: "오늘 판매", value: "\(Int.random(in: 0...15))개")
-                            InfoRow(label: "이번 주 판매", value: "\(Int.random(in: 5...50))개")
-                            InfoRow(label: "이번 달 판매", value: "\(Int.random(in: 20...200))개")
+                            InfoRow(label: "오늘 판매", value: "\(todaySales)개")
+                            InfoRow(label: "이번 주 판매", value: "\(weeklySales)개")
+                            InfoRow(label: "이번 달 판매", value: "\(monthlySales)개")
                         }
                     }
                     
@@ -172,6 +177,14 @@ struct ProductDetailView: View {
             .sheet(isPresented: $isEditing) {
                 EditProductView(product: $product)
                     .environmentObject(storeManager)
+            }
+            .onAppear {
+                // 뷰가 처음 나타날 때만 랜덤값 설정
+                if todaySales == 0 && weeklySales == 0 && monthlySales == 0 {
+                    todaySales = Int.random(in: 0...15)
+                    weeklySales = Int.random(in: 5...50)
+                    monthlySales = Int.random(in: 20...200)
+                }
             }
         }
     }
