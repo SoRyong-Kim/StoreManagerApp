@@ -2,9 +2,10 @@ import SwiftUI
 
 struct MonthlySalesStatsView: View {
     @StateObject private var salesManager = SalesManager()
-    @State private var selectedMonth: String? // ID 대신 String으로 변경
+    @State private var selectedMonth: String?
     @State private var showingPeriodSelector = false
     @State private var selectedPeriod = "최근 6개월"
+    @State private var showingAIInsights = true // AI 추천 표시 토글
     
     private let periodOptions = ["최근 3개월", "최근 6개월", "최근 12개월", "전체 기간"]
     
@@ -26,7 +27,7 @@ struct MonthlySalesStatsView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    // 기간 선택 헤더
+                    // 기간 선택 및 AI 토글 헤더
                     HStack {
                         Button(action: { showingPeriodSelector = true }) {
                             HStack {
@@ -50,6 +51,26 @@ struct MonthlySalesStatsView: View {
                         
                         Spacer()
                         
+                        // AI 인사이트 토글
+                        Button(action: {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showingAIInsights.toggle()
+                            }
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "brain.head.profile")
+                                    .font(.caption)
+                                Text("AI")
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(showingAIInsights ? Color.blue : Color.gray.opacity(0.2))
+                            .foregroundColor(showingAIInsights ? .white : .primary)
+                            .cornerRadius(12)
+                        }
+                        
                         Text("총 \(monthlySalesData.count)개월")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -66,19 +87,35 @@ struct MonthlySalesStatsView: View {
                             .padding(.horizontal)
                     }
                     
-                    // 월별 상세 데이터
+                    // 실시간 추천 위젯 (최신 데이터가 있을 때만)
+                    if showingAIInsights && !monthlySalesData.isEmpty {
+                        RealtimeRecommendationWidget(salesManager: salesManager)
+                            .padding(.horizontal)
+                    }
+                    
+                    // 월별 상세 데이터 및 AI 추천
                     LazyVStack(spacing: 12) {
-                        ForEach(monthlySalesData, id: \.monthYear) { monthData in // id 명시적 지정
-                            MonthlyDataCard(
-                                data: monthData,
-                                isExpanded: selectedMonth == monthData.monthYear // monthYear로 비교
-                            ) {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    if selectedMonth == monthData.monthYear {
-                                        selectedMonth = nil
-                                    } else {
-                                        selectedMonth = monthData.monthYear
+                        ForEach(monthlySalesData, id: \.monthYear) { monthData in
+                            VStack(spacing: 16) {
+                                // 기존 월별 데이터 카드
+                                MonthlyDataCard(
+                                    data: monthData,
+                                    isExpanded: selectedMonth == monthData.monthYear,
+                                    showingAIInsights: showingAIInsights
+                                ) {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        if selectedMonth == monthData.monthYear {
+                                            selectedMonth = nil
+                                        } else {
+                                            selectedMonth = monthData.monthYear
+                                        }
                                     }
+                                }
+                                
+                                // AI 추천 섹션 (확장되어 있고 AI 표시가 켜져 있을 때만)
+                                if selectedMonth == monthData.monthYear && showingAIInsights {
+                                    AIRecommendationSection(recommendation: monthData.recommendation)
+                                        .transition(.opacity.combined(with: .move(edge: .top)))
                                 }
                             }
                         }
@@ -235,16 +272,35 @@ struct MonthlySalesChart: View {
 struct MonthlyDataCard: View {
     let data: MonthlySalesData
     let isExpanded: Bool
+    let showingAIInsights: Bool
     let onTap: () -> Void
     
     var body: some View {
         VStack(spacing: 0) {
-            // 헤더 - 클릭 영역 개선
+            // 헤더
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(data.monthYear)
-                        .font(.headline)
-                        .foregroundColor(.primary)
+                    HStack {
+                        Text(data.monthYear)
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        
+                        // AI 분석 완료 뱃지
+                        if data.recommendation != nil && showingAIInsights {
+                            HStack(spacing: 4) {
+                                Image(systemName: "brain.head.profile")
+                                    .font(.caption2)
+                                Text("AI 분석")
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                            }
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.green.opacity(0.2))
+                            .foregroundColor(.green)
+                            .cornerRadius(6)
+                        }
+                    }
                     
                     HStack(spacing: 16) {
                         Text("매출: \(Int(data.totalSales).formattedWithComma)원")
@@ -259,12 +315,18 @@ struct MonthlyDataCard: View {
                 
                 Spacer()
                 
-                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                    .foregroundColor(.blue)
-                    .animation(.easeInOut(duration: 0.2), value: isExpanded)
+                VStack(spacing: 4) {
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .foregroundColor(.blue)
+                        .animation(.easeInOut(duration: 0.2), value: isExpanded)
+                    
+                    if showingAIInsights && data.recommendation != nil {
+                        ConfidenceIndicator(score: data.recommendation?.confidenceScore ?? 0)
+                    }
+                }
             }
             .padding()
-            .contentShape(Rectangle()) // 전체 영역을 탭 가능하게 만듦
+            .contentShape(Rectangle())
             .onTapGesture {
                 onTap()
             }
@@ -273,6 +335,12 @@ struct MonthlyDataCard: View {
             if isExpanded {
                 VStack(spacing: 16) {
                     Divider()
+                    
+                    // 시간대별 분석 (AI 기능이 켜져 있을 때만)
+                    if showingAIInsights && !data.timeSlotAnalysis.isEmpty {
+                        TimeSlotQuickAnalysis(timeSlotAnalysis: data.timeSlotAnalysis)
+                        Divider()
+                    }
                     
                     // 카테고리별 매출
                     CategorySalesSection(categories: data.categorySales)
@@ -284,12 +352,47 @@ struct MonthlyDataCard: View {
                 }
                 .padding(.horizontal)
                 .padding(.bottom)
-                .transition(.opacity.combined(with: .move(edge: .top))) // 부드러운 전환 효과
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .background(Color.white)
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+    }
+}
+
+struct TimeSlotQuickAnalysis: View {
+    let timeSlotAnalysis: [TimeSlotAnalysis]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("⏰ 시간대별 매출 분석")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+            
+            HStack(spacing: 8) {
+                ForEach(timeSlotAnalysis.prefix(4)) { analysis in
+                    VStack(spacing: 4) {
+                        Image(systemName: analysis.timeSlot.icon)
+                            .font(.caption)
+                            .foregroundColor(analysis.timeSlot.color)
+                        
+                        Text(analysis.timeSlot.rawValue)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        
+                        Text("\(Int(analysis.salesPercentage))%")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(analysis.timeSlot.color)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(analysis.timeSlot.color.opacity(0.1))
+                    .cornerRadius(6)
+                }
+            }
+        }
     }
 }
 

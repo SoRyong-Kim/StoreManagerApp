@@ -14,7 +14,6 @@ enum StoreCategory: String, CaseIterable, Codable {
     case restaurant = "음식점"
     case retail = "소매점"
     case cafe = "카페"
-    case beauty = "미용실"
     case clothing = "의류점"
     case convenience = "편의점"
     case other = "기타"
