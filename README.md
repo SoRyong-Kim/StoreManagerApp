@@ -11,9 +11,9 @@ AI 기반 재고 알림 및 추천 기능도 지원합니다.
 
 아래 영상에서 **StoreManagerApp**의 전체 기능 흐름과 사용 방식을 확인하실 수 있습니다.
 
-[![StoreManagerApp 시연 영상](https://youtu.be/bT4u3JBkUF4.jpg)](https://youtu.be/bT4u3JBkUF4)
+[![StoreManagerApp 시연 영상](https://img.youtube.com/vi/bT4u3JBkUF4/0.jpg)](https://www.youtube.com/watch?v=bT4u3JBkUF4)
 
-> 📌 영상이 재생되지 않을 경우 [여기서 바로 보기](https://youtu.be/bT4u3JBkUF4)
+> 📌 영상이 재생되지 않을 경우 [여기서 바로 보기](https://www.youtube.com/watch?v=bT4u3JBkUF4)
 
 ---
 
